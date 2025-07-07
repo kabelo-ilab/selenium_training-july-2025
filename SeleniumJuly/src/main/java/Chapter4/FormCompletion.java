@@ -6,7 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 /**
- * Complete the form on {@link https://www.tutorialspoint.com/selenium/practice/selenium_automation_practice.php}
+ * Complete the form on {@link <a href="https://www.tutorialspoint.com/selenium/practice/selenium_automation_practice.php">}
  */
 public class FormCompletion {
     public static void main(String[] args) {
@@ -17,6 +17,5 @@ public class FormCompletion {
         WebElement dateOfBirth = driver.findElement(By.xpath("//input[@name='dob' and @type='date']"));
         dateOfBirth.sendKeys("10-Jun-2015");
 
-        String name = "Kabelo";
     }
 }
