@@ -38,7 +38,7 @@ public class ParameterizedTests {
         assertTrue(name.contains("o"), name + " doesn't contain the letter 'O'");
     }
     @ParameterizedTest
-    @CsvSource(value = {"John,21,1.69,false", "Jessica,38,1.63,true", "Tom,45,1.71,true",
+    @CsvSource(value = {"John,Smith,21,1.69,false", "Jessica,38,1.63,true", "Tom,45,1.71,true",
     "Mike,18,1.77,false", "Carol,28,1.62,false"})
     void testIsEmployed(String name, int age, double height, boolean employed){
         System.out.println("name = " + name + ", age = " + age + ", height = " + height + ", employed = " + employed);
