@@ -1,22 +1,22 @@
-package Chapter6;
+package Chapter7;
 
-import net.bytebuddy.description.modifier.MethodArguments;
+import com.google.common.io.Files;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.WindowType;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Calendar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class HRMLogin {
+public class HRMLoginWithScreenshots {
 
    static WebDriver driver;
 
@@ -24,6 +24,28 @@ public class HRMLogin {
    static void setup(){
        driver = new ChromeDriver();
        driver.manage().window().maximize();
+   }
+
+   @AfterEach
+   void captureScreenshot(){
+       String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+
+       try{
+           Thread.sleep(2000);
+           //Take a screenshot
+           File sourceFile = ((TakesScreenshot) (driver))
+                   .getScreenshotAs(OutputType.FILE);
+           String imageName = "_" + timeStamp + ".png"; //Test image 20250709_142136
+           File destinationFile = new File("src/test/resources/Screenshots/Test image" + imageName);
+           Files.move(sourceFile, destinationFile);
+
+           driver.manage().deleteAllCookies();
+
+       }catch (IOException ex){
+           System.out.println(ex.getMessage());
+       }catch (InterruptedException ex){
+           System.out.println(ex.getMessage());
+       }
    }
 
     @ParameterizedTest(name = "TC1 - Valid Login - [{index}] : {arguments}")

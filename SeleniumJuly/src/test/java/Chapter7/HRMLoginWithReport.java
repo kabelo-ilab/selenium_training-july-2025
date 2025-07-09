@@ -1,29 +1,52 @@
-package Chapter6;
+package Chapter7;
 
-import net.bytebuddy.description.modifier.MethodArguments;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.google.common.io.Files;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.WindowType;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Calendar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class HRMLogin {
+public class HRMLoginWithReport {
 
    static WebDriver driver;
+   static ExtentReports report;
+   static ExtentSparkReporter rptSpark;
+   boolean isPass;
 
    @BeforeAll
    static void setup(){
+       report = new ExtentReports();
+       rptSpark = new ExtentSparkReporter("src/test/resources/Reports/Spark.html");
+       rptSpark.config().setReportName("Test Summary Report");
+       rptSpark.config().setDocumentTitle("The Spark Report");
+       report.attachReporter(rptSpark);
+
        driver = new ChromeDriver();
        driver.manage().window().maximize();
+   }
+
+   @AfterEach
+   void generateReport(TestInfo info){
+       ExtentTest myTest = report.createTest(info.getTestMethod().get().getName());
+       if (isPass){
+           myTest.log(Status.PASS, "Test passed");
+       }else{
+           myTest.log(Status.FAIL,"Test failed");
+       }
    }
 
     @ParameterizedTest(name = "TC1 - Valid Login - [{index}] : {arguments}")
@@ -43,6 +66,7 @@ public class HRMLogin {
         driver.findElement(By.cssSelector("button[type='submit']")).click();
         //Actual
         String actualURL = driver.getCurrentUrl();
+        isPass = driver.getCurrentUrl().equals(expectedURL);
         //Assert
         assertEquals(expectedURL, actualURL);
     }
@@ -71,6 +95,7 @@ public class HRMLogin {
         String actualText = errorMessage.getText();
         System.out.println(errorMessage.getText());
         //Assert
+        isPass = errorMessage.getText().equals(expectedText);
         assertEquals(expectedText, actualText, "The system should display 'Invalid credentials' message");
     }
 
@@ -94,7 +119,13 @@ public class HRMLogin {
 
         String actualURL = driver.getCurrentUrl();
         //Assert
+        isPass = driver.getCurrentUrl().equals(expectedURL);
         assertEquals(expectedURL, actualURL, "The system should display 'Invalid credentials' message");
+    }
+
+    @AfterAll
+    static void tearDown(){
+       report.flush();
     }
 
 
